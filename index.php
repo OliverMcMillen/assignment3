@@ -49,7 +49,7 @@ $screenName = $_SESSION['screenName'] ?? '';
         }
 
         header {
-            background-color:rgb(196, 196, 196);
+            background-color: rgb(196, 196, 196);
             color: black;
             padding: 20px;
             text-align: center;
@@ -62,6 +62,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             align-items: center;
             border: 1px solid #b3b3b3;
             background: #f3f3f3;
+            min-height: 15px;
         }
 
         .col-left {
@@ -98,22 +99,19 @@ $screenName = $_SESSION['screenName'] ?? '';
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* padding: 10px; */
             background: #f3f3f3;
-            
+
         }
 
         .chatCol-left {
             flex: 3;
             border: 1px solid #b3b3b3;
-            /* padding-right: 10px; */
             min-height: 400px;
         }
 
         .chatCol-right {
             flex: 3;
             border: 1px solid #b3b3b3;
-            /* padding-left: 10px; */
             min-height: 400px;
         }
 
@@ -123,7 +121,6 @@ $screenName = $_SESSION['screenName'] ?? '';
             border: 1px solid #b3b3b3;
             min-height: 400px;
         }
-
     </style>
 </head>
 
@@ -132,7 +129,9 @@ $screenName = $_SESSION['screenName'] ?? '';
     <header>Chat room via PHP web sockets</header>
 
     <div class="top-row">
-        <div class="col-left"> <p></p></div>
+        <div class="col-left">
+            <p></p>
+        </div>
 
         <div class="col-center">By: Oliver McMillen and Nawal Chrishty</div>
 
@@ -152,14 +151,51 @@ $screenName = $_SESSION['screenName'] ?? '';
     <?php if ($isLoggedIn): ?>
 
         <!-- Placeholder for available rooms and chat UI -->
-         <div class="middle-sec">
-            <div class="chatCol-left"><p></p></div>
-            <div class="chatCol-center"><p></p></div>
-            <div class="chatCol-right"><p></p></div>
+        <div class="top-row"><br></div>
+        <div class="middle-sec">
+            <div class="chatCol-left">
+                <div style="padding: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Available Rooms</h3>
+                        <button id="addRoomBtn"><b>+</b></button>
+                    </div>
+
+                    <div style="display: flex; font-weight: bold; padding: 5px 0; border-bottom: 1px solid #ccc;">
+                        <div style="flex: 3;">Room Name</div>
+                        <div style="flex: 1; text-align: center;">Lock</div>
+                        <div style="flex: 2; text-align: right;">Join</div>
+                    </div>
+
+                    <div id="roomList" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                        <!-- Sample data -->
+                        <div style="display: flex; padding: 5px 0; border-bottom: 1px solid #eee;">
+                            <div style="flex: 3;">Room A</div>
+                            <div style="flex: 1; text-align: center;"><img src="resources/unlock.png" width="16"></div>
+                            <div style="flex: 2; text-align: right;"><button>Join</button></div>
+                        </div>
+
+                        <div style="display: flex; padding: 5px 0; border-bottom: 1px solid #eee;">
+                            <div style="flex: 3;">Room B</div>
+                            <div style="flex: 1; text-align: center;"><img src="resources/lock.png" width="16"></div>
+                            <div style="flex: 2; text-align: right;"><button>Join</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="chatCol-center">
+                <p></p>
+            </div>
+
+
+            <div class="chatCol-right">
+                <p></p>
+            </div>
         </div>
 
 
-    <!-- If user is not logged in... -->
+        <!-- If user is not logged in... -->
     <?php else: ?>
 
         <!-- Login Overlay -->
@@ -216,7 +252,7 @@ $screenName = $_SESSION['screenName'] ?? '';
         </div>
     </div>
 
-<script>
+    <script>
         document.getElementById("helpBtn").addEventListener("click", () => {
             document.getElementById("helpOverlay").style.display = "flex";
         });
