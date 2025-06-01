@@ -8,7 +8,7 @@ $screenName = $_SESSION['screenName'] ?? '';
 
 <head>
     <meta charset="UTF-8">
-    <title>Chatroom | Oliver McMillen</title>
+    <title>Chatroom</title>
     <style>
         body {
             margin-left: 50px;
@@ -58,9 +58,9 @@ $screenName = $_SESSION['screenName'] ?? '';
 
         .top-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             padding: 10px;
+            border: 1px solid #b3b3b3;
             background: #f3f3f3;
         }
 
@@ -83,12 +83,38 @@ $screenName = $_SESSION['screenName'] ?? '';
             font-size: 15px;
         }
 
-        .col-right {
-            text-align: right;
+        .middle-sec {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* padding: 10px; */
+            background: #f3f3f3;
+            
+        }
+
+        .chatCol-left {
+            flex: 3;
+            border: 1px solid #b3b3b3;
+            /* padding-right: 10px; */
+            min-height: 400px;
+        }
+
+        .chatCol-right {
+            flex: 3;
+            border: 1px solid #b3b3b3;
+            /* padding-left: 10px; */
+            min-height: 400px;
+        }
+
+        .chatCol-center {
+            flex: 1;
+            text-align: center;
+            border: 1px solid #b3b3b3;
+            min-height: 400px;
         }
 
         .col-right button {
-            margin-left: 0.5rem;
+            margin-left: 7px;
         }
     </style>
 </head>
@@ -100,7 +126,7 @@ $screenName = $_SESSION['screenName'] ?? '';
     <div class="top-row">
         <div class="col-left"> <p></p></div>
 
-        <div class="col-center">By: Oliver McMillen and Nawal Christy</div>
+        <div class="col-center">By: Oliver McMillen and Nawal Chrishty</div>
 
         <div class="col-right">
             <!-- If user is logged in, display logout button -->
@@ -114,14 +140,18 @@ $screenName = $_SESSION['screenName'] ?? '';
         </div>
     </div>
 
+    <!-- If user is logged in... -->
     <?php if ($isLoggedIn): ?>
-        <p>Welcome, <strong><?php echo htmlspecialchars($screenName); ?></strong>!</p>
 
         <!-- Placeholder for available rooms and chat UI -->
-        <div id="chatUI">
-            <p>Chat UI will go here...</p>
+         <div class="middle-sec">
+            <div class="chatCol-left"><p></p></div>
+            <div class="chatCol-center"><p></p></div>
+            <div class="chatCol-right"><p></p></div>
         </div>
 
+
+    <!-- If user is not logged in... -->
     <?php else: ?>
 
         <!-- Login Overlay -->
@@ -166,7 +196,7 @@ $screenName = $_SESSION['screenName'] ?? '';
     <?php endif; ?>
 
 
-    <!-- Help Overlay -->
+    <!-- Help Overlay - Displayed regardless of session status-->
     <div class="overlay" id="helpOverlay">
         <div class="overlay-content">
             <span class="close-btn" id="closeHelp">[x]</span>
