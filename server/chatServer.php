@@ -37,7 +37,7 @@ do {
 			else { // must be regular data/message
 				if (!empty($message)) {
 					// if the message is a JSON string, this is where to convert it
-echo "Received:>>$message<<\n";
+					echo "Received:>>$message<<\n";
 					// Broadcast message to OTHER clients
                 			foreach ($listOfConnectedClients as $client) {
                     				if ($client != $clientSocket) {
@@ -94,7 +94,7 @@ function disconnectClient ($clientSocket, &$listOfConnectedClients, &$connectedC
         if (($clientKey=array_search($clientSocket, $listOfConnectedClients)) !== false) { // find the index
 	        unset($listOfConnectedClients[$clientKey]);			// zap it from the list
 		unset($connectedClientsHandshakes[$clientKey]);			// zap it from the list
-echo "disconnected client\n";
+		echo "disconnected client\n";
 	}
 	socket_close($clientSocket);	// close the connection to it
 }
