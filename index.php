@@ -56,25 +56,35 @@ $screenName = $_SESSION['screenName'] ?? '';
             font-size: 25px;
         }
 
+        /* Top row */
         .top-row {
             display: flex;
             align-items: center;
-            padding: 10px;
             border: 1px solid #b3b3b3;
             background: #f3f3f3;
         }
 
         .col-left {
             flex: 2;
-            border-right: 1px solid #000;
+            border-right: 1px solid #b3b3b3;
             padding-right: 10px;
+            min-height: 35px;
         }
 
         .col-right {
             flex: 2;
             text-align: right;
-            border-left: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: right;
+            border-left: 1px solid #b3b3b3;
             padding-left: 10px;
+            min-height: 35px;
+        }
+
+        .col-right button {
+            margin-left: 7px;
+            margin-right: 7px;
         }
 
         .col-center {
@@ -83,6 +93,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             font-size: 15px;
         }
 
+        /* Chat section */
         .middle-sec {
             display: flex;
             justify-content: space-between;
@@ -113,9 +124,6 @@ $screenName = $_SESSION['screenName'] ?? '';
             min-height: 400px;
         }
 
-        .col-right button {
-            margin-left: 7px;
-        }
     </style>
 </head>
 
