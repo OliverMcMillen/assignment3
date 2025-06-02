@@ -175,13 +175,6 @@ $screenName = $_SESSION['screenName'] ?? '';
                         </div>
 
                         <div id="roomList" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
-                            <!-- Sample data -->
-                            <!-- <div style="display: flex; padding: 5px 0; border-bottom: 1px solid #eee;">
-                                <div style="flex: 3;">Room A</div>
-                                <div style="flex: 1; text-align: center;"><img src="resources/unlock.png" width="16"></div>
-                                <div style="flex: 2; text-align: right;"><button>Join</button></div>
-                            </div> -->
-
                         </div>
                     </div>
                 </div>
@@ -196,28 +189,11 @@ $screenName = $_SESSION['screenName'] ?? '';
                     <div style="margin-top: 15px; padding: 10px; height: 100%; display: flex; flex-direction: column;">
 
                         <!-- Header for current room name -->
-                        <h3 style="margin: 0 0 10px;">Room: <span id="currentRoomName"></span></h3>
+                        <h3 style="margin: 0 0 10px;"><span id="currentRoomName"></span></h3>
 
                         <!-- Scrollable message area -->
                         <div id="messageArea"
                             style="flex: 2; overflow-y: auto; max-height: 250px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-                            <!-- Sample messages -->
-                            <div style="padding: 5px; background: #f9f9f9;">Jane777: Hello, everyone. This is Jane.</div>
-                            <div style="padding: 5px; background: #e0e0e0;">me: Hi Jane.</div>
-                            <div style="padding: 5px; background: #f9f9f9;">Jake: Welcome Jane</div>
-                            <div style="padding: 5px; background: #e0e0e0;">Jane777: Who is going to the game tonight?</div>
-                            <div style="padding: 5px; background: #f9f9f9;">Jane777: Hello, everyone. This is Jane.</div>
-                            <div style="padding: 5px; background: #e0e0e0;">me: Hi Jane.</div>
-                            <div style="padding: 5px; background: #f9f9f9;">Jake: Welcome Jane</div>
-                            <div style="padding: 5px; background: #e0e0e0;">Jane777: Who is going to the game tonight?</div>
-                            <div style="padding: 5px; background: #f9f9f9;">Jane777: Hello, everyone. This is Jane.</div>
-                            <div style="padding: 5px; background: #e0e0e0;">me: Hi Jane.</div>
-                            <div style="padding: 5px; background: #f9f9f9;">Jake: Welcome Jane</div>
-                            <div style="padding: 5px; background: #e0e0e0;">Jane777: Who is going to the game tonight?</div>
-                            <div style="padding: 5px; background: #f9f9f9;">Jane777: Hello, everyone. This is Jane.</div>
-                            <div style="padding: 5px; background: #e0e0e0;">me: Hi Jane.</div>
-                            <div style="padding: 5px; background: #f9f9f9;">Jake: Welcome Jane</div>
-                            <div style="padding: 5px; background: #e0e0e0;">Jane777: Who is going to the game tonight?</div>
                         </div>
 
                         <!-- Message input -->
@@ -291,6 +267,22 @@ $screenName = $_SESSION['screenName'] ?? '';
             </div>
         </div>
 
+        <!-- Join Room Key Overlay -->
+        <div class="overlay" id="joinKeyOverlay">
+            <div class="overlay-content">
+                <span class="close-btn" id="closeJoinKey">[x]</span>
+                <h2>Enter Room Key</h2>
+                <p id="joinRoomTitle"></p>
+                <form id="joinRoomForm">
+                    <input type="hidden" id="hiddenRoomName">
+                    <label>Room Key:<br>
+                        <input type="password" id="roomKeyInput" required>
+                    </label><br><br>
+                    <button type="submit">Join</button>
+                </form>
+                <div id="joinRoomMsg" style="color: red; margin-top: 1rem;"></div>
+            </div>
+        </div>
 
         <!-- Help Overlay - Displayed regardless of session status-->
         <div class="overlay" id="helpOverlay">
@@ -306,6 +298,8 @@ $screenName = $_SESSION['screenName'] ?? '';
         </div>
 
         <script>
+            let currentRoom = "";
+
             document.getElementById("helpBtn").addEventListener("click", () => {
                 document.getElementById("helpOverlay").style.display = "flex";
             });
@@ -331,6 +325,11 @@ $screenName = $_SESSION['screenName'] ?? '';
             document.getElementById("closeSignup")?.addEventListener("click", () => hide("signupOverlay"));
             document.getElementById("addRoomBtn")?.addEventListener("click", () => show("createRoomOverlay"));
             document.getElementById("closeCreateRoom")?.addEventListener("click", () => hide("createRoomOverlay"));
+            document.getElementById("closeJoinKey").addEventListener("click", () => {
+                document.getElementById("joinKeyOverlay").style.display = "none";
+                document.getElementById("joinRoomMsg").textContent = "";
+            });
+
 
             // Login overlay
             document.getElementById("loginForm").addEventListener("submit", async (e) => {
@@ -373,6 +372,27 @@ $screenName = $_SESSION['screenName'] ?? '';
                 }
             });
 
+            // Join room overlay
+            document.getElementById("joinRoomForm").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const roomName = document.getElementById("hiddenRoomName").value;
+                const roomKey = document.getElementById("roomKeyInput").value.trim();
+                const res = await fetch("/services/joinRoom.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chatroomName: roomName, chatroomKey: roomKey })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById("joinKeyOverlay").style.display = "none";
+                    document.getElementById("currentRoomName").textContent = roomName;
+                    document.getElementById("messageArea").innerHTML = "";
+                    currentRoom = roomName;
+                } else {
+                    document.getElementById("joinRoomMsg").textContent = data.error || "Join failed.";
+                }
+            });
 
 
             // Create room form submission
@@ -391,6 +411,7 @@ $screenName = $_SESSION['screenName'] ?? '';
                 const data = await res.json();
                 if (data.success) {
                     hide("createRoomOverlay");
+                    form.reset();
 
                     addRoomToList({
                         name: form.chatroomName.value.trim(),
@@ -406,11 +427,11 @@ $screenName = $_SESSION['screenName'] ?? '';
                         }));
                     }
                     form.reset();
-                    // You could also trigger UI update here
                 } else {
                     document.getElementById("createRoomMsg").textContent = data.error || "Failed to create chatroom.";
                 }
             });
+
 
             async function loadAvailableRooms() {
                 const res = await fetch("/services/getRooms.php");
@@ -425,6 +446,7 @@ $screenName = $_SESSION['screenName'] ?? '';
                     addRoomToList(room);
                 });
             }
+
 
             function addRoomToList(room) {
                 const roomList = document.getElementById("roomList");
@@ -443,6 +465,27 @@ $screenName = $_SESSION['screenName'] ?? '';
                     </div>
                 `;
 
+                div.querySelector(".joinBtn").addEventListener("click", () => {
+                    const roomName = room.name;
+
+                    if (room.locked) {
+                        document.getElementById("joinRoomTitle").textContent = `Room: ${roomName}`;
+                        document.getElementById("hiddenRoomName").value = roomName;
+                        document.getElementById("roomKeyInput").value = "";
+                        document.getElementById("joinRoomMsg").textContent = "";
+                        document.getElementById("joinKeyOverlay").style.display = "flex";
+                        document.getElementById("messageArea").innerHTML = ""; // Clear old messages
+                        currentRoom = roomName;
+                    } else if (!room.locked){
+                        document.getElementById("joinKeyOverlay").style.display = "none";
+                        document.getElementById("currentRoomName").textContent = roomName;
+                        document.getElementById("messageArea").innerHTML = ""; // Clear old messages
+                        currentRoom = roomName;
+                    } else {
+                        document.getElementById("joinRoomMsg").textContent = data.error || "Join failed.";
+                    }
+                });
+
                 roomList.appendChild(div);
             }
 
@@ -453,12 +496,49 @@ $screenName = $_SESSION['screenName'] ?? '';
             // WebSocket for broadcasting new rooms
             const socket = new WebSocket("ws://localhost:8081");
 
+            // Broadcast to WebSocket
             socket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                if (data.type) {
-                    addRoomToList(data);
+
+                if (data.type === "new_room") {
+                            addRoomToList({
+                                name: data.name,
+                                locked: data.locked
+                            });
+                    }
+                
+                if (data.type === "chat_message" && data.room === currentRoom) {
+                    const messageArea = document.getElementById("messageArea");
+                    const isMe = data.screenName === "<?= $screenName ?>";
+                    const sender = isMe ? "Me" : data.screenName;
+
+                    const isEven = messageArea.children.length % 2 === 0;
+                    const bg = isEven ? "#f9f9f9" : "#e0e0e0";
+
+                    const div = document.createElement("div");
+                    div.style.padding = "5px";
+                    div.style.background = bg;
+                    div.textContent = `${sender}: ${data.message}`;
+
+                    messageArea.appendChild(div);
+                    messageArea.scrollTop = messageArea.scrollHeight;
                 }
             };
+
+            // Send button functionality
+            document.getElementById("sendBtn").addEventListener("click", () => {
+                const msg = document.getElementById("messageInput").value.trim();
+                if (!msg || !socket || socket.readyState !== WebSocket.OPEN) return;
+
+                socket.send(JSON.stringify({
+                    type: "chat_message",
+                    room: currentRoom,
+                    screenName: "<?= $screenName ?>",
+                    message: msg
+                }));
+
+                document.getElementById("messageInput").value = "";
+            });
         </script>
     </div>
 </body>

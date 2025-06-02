@@ -7,7 +7,8 @@ socket_listen($serverSocket) or die ("Unable to start server, exiting!");
 echo "Server now running on port $port\n";
 
 // Check for incoming messages or connect/disconnect requests
-$listOfConnectedClients = []; 
+$listOfConnectedClients = [];
+$clientRooms = [];
 $connectedClientsHandshakes = [];
 // handshake is a mechanisom by which the server and the connecting clients introduce each other,
 // authenticate and establish how they want to communicate/the rules.
@@ -34,15 +35,57 @@ do {
 			if ($len === false || $len == 0 || strlen($message=unmask($buffer))>0 && ord($message[0])==$EOF) { // disconnecting client or error? If so, remove it from connected list
 				disconnectClient($clientSocket, $listOfConnectedClients, $connectedClientsHandshakes, $clientsWithData);
 			}
-			else { // must be regular data/message
+			else {
 				if (!empty($message)) {
-					// if the message is a JSON string, this is where to convert it
 					echo "Received:>>$message<<\n";
-					// Broadcast message to OTHER clients
-                			foreach ($listOfConnectedClients as $client) {
-                    				if ($client != $clientSocket) {
-                        				sendMessage($client, $message);
-                    				}
+
+					$data = json_decode($message, true);
+
+					if (!$data || !isset($data['type'])) {
+						echo "Invalid message format.\n";
+						continue;
+					}
+
+					switch ($data['type']) {
+						case 'new_room':
+							// Broadcast new room to all clients
+							foreach ($listOfConnectedClients as $client) {
+								sendMessage($client, json_encode([
+									'type' => 'new_room',
+									'roomName' => $chatroomName,
+									'locked' => !empty($chatroomKey)
+								]));
+							}
+							break;
+
+						case 'join_room':
+							// Store room info using associative array by unique socket id
+							$clientId = array_search($clientSocket, $listOfConnectedClients, true);
+							$clientRooms[$clientId] = $data['roomName'];
+							break;
+
+						case 'chat_message':
+							// Broadcast to same-room clients only (including sender)
+							$senderId = array_search($clientSocket, $listOfConnectedClients, true);
+							foreach ($listOfConnectedClients as $client) {
+								$clientId = array_search($client, $listOfConnectedClients, true);
+								if (
+									isset($clientRooms[$clientId]) &&
+									isset($clientRooms[$senderId]) &&
+									$clientRooms[$clientId] === $clientRooms[$senderId]
+								) {
+									echo "Broadcasting message to client in same room: " . $clientRooms[$clientId] . "\n";
+									sendMessage($client, json_encode([
+										'type' => 'new_message',
+										'screenName' => $data['screenName'],
+										'message' => $data['message']
+									]));
+								}
+							}
+							break;
+
+						default:
+							echo "Unknown message type: {$data['type']}\n";
 					}
 				}
 			}
@@ -189,4 +232,3 @@ function sendMessage($clientSocket, $message) {
     $message = mask($message);
     socket_write($clientSocket, $message, strlen($message));
 }
-
