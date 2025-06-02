@@ -52,8 +52,8 @@ do {
 							foreach ($listOfConnectedClients as $client) {
 								sendMessage($client, json_encode([
 									'type' => 'new_room',
-									'roomName' => $chatroomName,
-									'locked' => !empty($chatroomKey)
+									'roomName' => $data['name'] ?? '',
+									'locked' => $data['locked'] ?? false
 								]));
 							}
 							break;

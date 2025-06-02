@@ -411,19 +411,19 @@ $screenName = $_SESSION['screenName'] ?? '';
                 const data = await res.json();
                 if (data.success) {
                     hide("createRoomOverlay");
-                    form.reset();
+                    
 
                     addRoomToList({
-                        name: form.chatroomName.value.trim(),
-                        locked: !!form.chatroomKey.value.trim()
+                        name: form.chatroomName.value,
+                        locked: !!form.chatroomKey.value
                     });
 
                     // Broadcast new room to all connected WebSocket clients
                     if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
                         socket.send(JSON.stringify({
                             type: "new_room",
-                            name: form.chatroomName.value.trim(),
-                            locked: !!form.chatroomKey.value.trim()
+                            name: form.chatroomName.value,
+                            locked: !!form.chatroomKey.value
                         }));
                     }
                     form.reset();
@@ -501,10 +501,10 @@ $screenName = $_SESSION['screenName'] ?? '';
                 const data = JSON.parse(event.data);
 
                 if (data.type === "new_room") {
-                            addRoomToList({
-                                name: data.name,
-                                locked: data.locked
-                            });
+                        addRoomToList({
+                            name: form.chatroomName.value.trim(),
+                            locked: !!form.chatroomKey.value.trim()
+                        });
                     }
                 
                 if (data.type === "chat_message" && data.room === currentRoom) {
