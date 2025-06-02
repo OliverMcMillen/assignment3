@@ -497,7 +497,7 @@ $screenName = $_SESSION['screenName'] ?? '';
                 if (data.type === "new_room") {
                         addRoomToList({
                             name: data.chatroomName,
-                            locked: !!data.chatroomKey
+                            locked: !!data.locked
                         });
                     }
                 
