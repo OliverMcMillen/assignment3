@@ -153,6 +153,7 @@ $screenName = $_SESSION['screenName'] ?? '';
         <!-- Placeholder for available rooms and chat UI -->
         <div class="top-row"><br></div>
         <div class="middle-sec">
+
             <div class="chatCol-left">
                 <div style="padding: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -190,7 +191,39 @@ $screenName = $_SESSION['screenName'] ?? '';
 
 
             <div class="chatCol-right">
-                <p></p>
+                <div style="margin-top: 15px; padding: 10px; height: 100%; display: flex; flex-direction: column;">
+
+                    <!-- Header for current room name -->
+                    <h3 style="margin: 0 0 10px;">Room: <span id="currentRoomName"></span></h3>
+
+                    <!-- Scrollable message area -->
+                    <div id="messageArea"
+                        style="flex: 2; overflow-y: auto; max-height: 250px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+                        <!-- Sample messages -->
+                        <div style="padding: 5px; background: #f9f9f9;">Jane777: Hello, everyone. This is Jane.</div>
+                        <div style="padding: 5px; background: #e0e0e0;">me: Hi Jane.</div>
+                        <div style="padding: 5px; background: #f9f9f9;">Jake: Welcome Jane</div>
+                        <div style="padding: 5px; background: #e0e0e0;">Jane777: Who is going to the game tonight?</div>                        <div style="padding: 5px; background: #f9f9f9;">Jane777: Hello, everyone. This is Jane.</div>
+                        <div style="padding: 5px; background: #e0e0e0;">me: Hi Jane.</div>
+                        <div style="padding: 5px; background: #f9f9f9;">Jake: Welcome Jane</div>
+                        <div style="padding: 5px; background: #e0e0e0;">Jane777: Who is going to the game tonight?</div>                        <div style="padding: 5px; background: #f9f9f9;">Jane777: Hello, everyone. This is Jane.</div>
+                        <div style="padding: 5px; background: #e0e0e0;">me: Hi Jane.</div>
+                        <div style="padding: 5px; background: #f9f9f9;">Jake: Welcome Jane</div>
+                        <div style="padding: 5px; background: #e0e0e0;">Jane777: Who is going to the game tonight?</div>                        <div style="padding: 5px; background: #f9f9f9;">Jane777: Hello, everyone. This is Jane.</div>
+                        <div style="padding: 5px; background: #e0e0e0;">me: Hi Jane.</div>
+                        <div style="padding: 5px; background: #f9f9f9;">Jake: Welcome Jane</div>
+                        <div style="padding: 5px; background: #e0e0e0;">Jane777: Who is going to the game tonight?</div>
+                    </div>
+
+                    <!-- Message input -->
+                     <div style="display: flex; gap: 10px;">
+                    <input type="text" id="messageInput" placeholder="Type your message..."
+                        style="flex: 1; padding: 8px; margin-bottom: 10px;">
+
+                    <!-- Send button -->
+                    <button id="sendBtn" style="align-self: flex-end;">Send</button>
+</div>
+                </div>
             </div>
         </div>
 
