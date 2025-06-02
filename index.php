@@ -170,7 +170,7 @@ $screenName = $_SESSION['screenName'] ?? '';
 
                         <div style="display: flex; font-weight: bold; padding: 5px 0; border-bottom: 1px solid #ccc;">
                             <div style="flex: 3;">Room Name</div>
-                            <div style="flex: 1; text-align: center;">Lock</div>
+                            <div style="flex: 1; text-align: center;">Status</div>
                             <div style="flex: 2; text-align: right;">Join</div>
                         </div>
 
@@ -412,12 +412,6 @@ $screenName = $_SESSION['screenName'] ?? '';
                 if (data.success) {
                     hide("createRoomOverlay");
                     
-
-                    addRoomToList({
-                        name: form.chatroomName.value,
-                        locked: !!form.chatroomKey.value
-                    });
-
                     // Broadcast new room to all connected WebSocket clients
                     if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
                         socket.send(JSON.stringify({
@@ -426,7 +420,7 @@ $screenName = $_SESSION['screenName'] ?? '';
                             locked: !!form.chatroomKey.value
                         }));
                     }
-                    form.reset();
+                    // form.reset();
                 } else {
                     document.getElementById("createRoomMsg").textContent = data.error || "Failed to create chatroom.";
                 }
@@ -502,8 +496,8 @@ $screenName = $_SESSION['screenName'] ?? '';
 
                 if (data.type === "new_room") {
                         addRoomToList({
-                            name: form.chatroomName.value.trim(),
-                            locked: !!form.chatroomKey.value.trim()
+                            name: data.chatroomName,
+                            locked: !!data.chatroomKey
                         });
                     }
                 

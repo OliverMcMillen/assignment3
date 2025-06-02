@@ -52,7 +52,7 @@ do {
 							foreach ($listOfConnectedClients as $client) {
 								sendMessage($client, json_encode([
 									'type' => 'new_room',
-									'roomName' => $data['name'] ?? '',
+									'chatroomName' => $data['name'] ?? '',
 									'locked' => $data['locked'] ?? false
 								]));
 							}
