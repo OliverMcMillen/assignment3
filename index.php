@@ -106,6 +106,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             justify-content: space-between;
             align-items: center;
             background: #f3f3f3;
+            max-height: 400px;
 
         }
 
@@ -157,12 +158,11 @@ $screenName = $_SESSION['screenName'] ?? '';
         <!-- If user is logged in... -->
         <?php if ($isLoggedIn): ?>
 
-            <!-- Placeholder for available rooms and chat UI -->
             <div class="top-row"><br></div>
             <div class="middle-sec">
 
                 <div class="chatCol-left">
-                    <div style="padding: 10px;">
+                    <div style="padding: 10px; max-height: 350px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h3>Available Rooms</h3>
                             <button id="addRoomBtn"><b>+</b></button>
@@ -184,16 +184,16 @@ $screenName = $_SESSION['screenName'] ?? '';
                     <p></p>
                 </div>
 
-
+                <!-- Chat Area -->
                 <div class="chatCol-right">
-                    <div style="margin-top: 15px; padding: 10px; height: 100%; display: flex; flex-direction: column;">
+                    <div style="margin-top: 15px; padding: 10px; height: 100%; min-height: 350px; max-height: 350px; display: flex; flex-direction: column;">
 
                         <!-- Header for current room name -->
                         <h3 style="margin: 0 0 10px;"><span id="currentRoomName"></span></h3>
 
                         <!-- Scrollable message area -->
                         <div id="messageArea"
-                            style="flex: 2; overflow-y: auto; max-height: 250px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+                            style="flex: 2; overflow-y: auto; max-height: 250px; min-height: 100px; max-height: 400px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; margin-top: 10px;">
                         </div>
 
                         <!-- Message input -->
@@ -411,7 +411,7 @@ $screenName = $_SESSION['screenName'] ?? '';
                 const data = await res.json();
                 if (data.success) {
                     hide("createRoomOverlay");
-                    
+
                     // Broadcast new room to all connected WebSocket clients
                     if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
                         socket.send(JSON.stringify({
@@ -424,6 +424,22 @@ $screenName = $_SESSION['screenName'] ?? '';
                 } else {
                     document.getElementById("createRoomMsg").textContent = data.error || "Failed to create chatroom.";
                 }
+            });
+
+
+            // Send button functionality
+            document.getElementById("sendBtn").addEventListener("click", () => {
+                const msg = document.getElementById("messageInput").value.trim();
+                // if (!msg || !socket || socket.readyState !== WebSocket.OPEN);
+
+                socket.send(JSON.stringify({
+                    type: "chat_message",
+                    room: currentRoom,
+                    screenName: "<?= $screenName ?>",
+                    message: msg
+                }));
+
+                document.getElementById("messageInput").value = "";
             });
 
 
@@ -470,7 +486,7 @@ $screenName = $_SESSION['screenName'] ?? '';
                         document.getElementById("joinKeyOverlay").style.display = "flex";
                         document.getElementById("messageArea").innerHTML = ""; // Clear old messages
                         currentRoom = roomName;
-                    } else if (!room.locked){
+                    } else if (!room.locked) {
                         document.getElementById("joinKeyOverlay").style.display = "none";
                         document.getElementById("currentRoomName").textContent = roomName;
                         document.getElementById("messageArea").innerHTML = ""; // Clear old messages
@@ -489,50 +505,40 @@ $screenName = $_SESSION['screenName'] ?? '';
 
             // WebSocket for broadcasting new rooms
             const socket = new WebSocket("ws://localhost:8081");
+            const myScreenName = "<?= $screenName ?>";
 
             // Broadcast to WebSocket
             socket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
 
+                console.log("Message received:", data, "Current room:", currentRoom);
+
                 if (data.type === "new_room") {
-                        addRoomToList({
-                            name: data.chatroomName,
-                            locked: !!data.locked
-                        });
-                    }
-                
-                if (data.type === "chat_message" && data.room === currentRoom) {
-                    const messageArea = document.getElementById("messageArea");
-                    const isMe = data.screenName === "<?= $screenName ?>";
+                    addRoomToList({
+                        name: data.chatroomName,
+                        locked: !!data.locked
+                    });
+                }
+
+                if (data.type === "chat_message") {
+                    if (!currentRoom) return;
+
+                    const isMe = data.screenName === myScreenName;
                     const sender = isMe ? "Me" : data.screenName;
 
-                    const isEven = messageArea.children.length % 2 === 0;
-                    const bg = isEven ? "#f9f9f9" : "#e0e0e0";
+                    const messageDiv = document.createElement("div");
+                    messageDiv.textContent = `${sender}: ${data.message}`;
+                    messageDiv.style.padding = "4px";
 
-                    const div = document.createElement("div");
-                    div.style.padding = "5px";
-                    div.style.background = bg;
-                    div.textContent = `${sender}: ${data.message}`;
+                    const messageArea = document.getElementById("messageArea");
+                    messageDiv.style.backgroundColor = messageArea.children.length % 2 === 0 ? "#f1f1f1" : "#dcdcdc";
 
-                    messageArea.appendChild(div);
+                    messageArea.appendChild(messageDiv);
                     messageArea.scrollTop = messageArea.scrollHeight;
                 }
             };
 
-            // Send button functionality
-            document.getElementById("sendBtn").addEventListener("click", () => {
-                const msg = document.getElementById("messageInput").value.trim();
-                if (!msg || !socket || socket.readyState !== WebSocket.OPEN) return;
 
-                socket.send(JSON.stringify({
-                    type: "chat_message",
-                    room: currentRoom,
-                    screenName: "<?= $screenName ?>",
-                    message: msg
-                }));
-
-                document.getElementById("messageInput").value = "";
-            });
         </script>
     </div>
 </body>
