@@ -55,26 +55,46 @@ do {
 							}
 							break;
 
-						case 'join_room':
-							// Store room info using associative array by unique socket id
-							$clientId = array_search($clientSocket, $listOfConnectedClients, true);
-							$clientRooms[$clientId] = $data['roomName'];
-							break;
-
 						case 'chat_message':
-							// Broadcast to same-room clients only (including sender)
+							// 1) Figure out which index (0, 1, 2, …) this $clientSocket occupies
 							$senderId = array_search($clientSocket, $listOfConnectedClients, true);
-							foreach ($listOfConnectedClients as $client) {
-								$clientId = array_search($client, $listOfConnectedClients, true);
-								sendMessage($client, json_encode([
-									'type' => 'chat_message',
-									'room' => $clientRooms[$clientId] ?? '',
-									'screenName' => $data['screenName'] ?? '',
-									'message' => $data['message'] ?? ''
+							var_export($senderId);
 
-								]));
+							$clientId = array_search($clientSocket, $listOfConnectedClients, true);
+							$clientRooms[$clientId] = $data['room'];
+							$clientRooms[$senderId] = $data['room'];
+
+							// 2) Make sure array_search found something, and that we actually have a room assigned
+							if ($senderId >= 0) {
+								if (array_key_exists($senderId, $clientRooms)) {
+									// Only now is it safe to read $clientRooms[$senderId]
+									$senderRoom = $clientRooms[$senderId];
+									echo "senderRoom: {$senderRoom}\n";
+
+									// 3) Broadcast to everyone who has the same room
+									foreach ($listOfConnectedClients as $client) {
+										$clientId = array_search($client, $listOfConnectedClients, true);
+										if (
+											$clientId !== 0
+											&& array_key_exists($clientId, $clientRooms)
+											&& $clientRooms[$clientId] === $senderRoom
+										) {
+											sendMessage($client, json_encode([
+												'type' => 'chat_message',
+												'room' => $senderRoom,
+												'screenName' => $data['screenName'] ?? '',
+												'message' => $data['message'] ?? ''
+											]));
+										}
+									}
+								} else {
+									// The client is connected, but hasn’t joined a room yet. Print a warning.
+									echo "client #{$senderId} has no entry in \$clientRooms.\n";
+								}
+							} else {
+								// array_search returned false – somehow we didn’t find $clientSocket in our clients list.
+								echo "senderId was false (client not in \$listOfConnectedClients).\n";
 							}
-
 							break;
 
 						default:
@@ -161,7 +181,7 @@ function performHandshake($clientSocket)
 	return true;
 }
 
-// Parse HTTP Headers
+// Parse HTTP Headers		
 function parseHeaders($headers)
 {
 	$headers = explode("\r\n", $headers);

@@ -186,7 +186,8 @@ $screenName = $_SESSION['screenName'] ?? '';
 
                 <!-- Chat Area -->
                 <div class="chatCol-right">
-                    <div style="margin-top: 15px; padding: 10px; height: 100%; min-height: 350px; max-height: 350px; display: flex; flex-direction: column;">
+                    <div
+                        style="margin-top: 15px; padding: 10px; height: 100%; min-height: 350px; max-height: 350px; display: flex; flex-direction: column;">
 
                         <!-- Header for current room name -->
                         <h3 style="margin: 0 0 10px;"><span id="currentRoomName"></span></h3>
@@ -385,10 +386,15 @@ $screenName = $_SESSION['screenName'] ?? '';
 
                 const data = await res.json();
                 if (data.success) {
-                    document.getElementById("joinKeyOverlay").style.display = "none";
-                    document.getElementById("currentRoomName").textContent = roomName;
-                    document.getElementById("messageArea").innerHTML = "";
+
                     currentRoom = roomName;
+
+                    if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({
+                            type: "join_room",
+                            roomName: currentRoom,
+                        }));
+                    }
                 } else {
                     document.getElementById("joinRoomMsg").textContent = data.error || "Join failed.";
                 }
@@ -430,7 +436,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             // Send button functionality
             document.getElementById("sendBtn").addEventListener("click", () => {
                 const msg = document.getElementById("messageInput").value.trim();
-                // if (!msg || !socket || socket.readyState !== WebSocket.OPEN);
+                if (!msg || !socket || socket.readyState !== WebSocket.OPEN);
 
                 socket.send(JSON.stringify({
                     type: "chat_message",
@@ -520,8 +526,14 @@ $screenName = $_SESSION['screenName'] ?? '';
                     });
                 }
 
+                if (data.type === "join_room") {
+                    document.getElementById("joinKeyOverlay").style.display = "none";
+                    document.getElementById("currentRoomName").textContent = roomName;
+                    document.getElementById("messageArea").innerHTML = "";
+                }
+
                 if (data.type === "chat_message") {
-                    if (!currentRoom) return;
+                    if (currentRoom === '') return;
 
                     const isMe = data.screenName === myScreenName;
                     const sender = isMe ? "Me" : data.screenName;
