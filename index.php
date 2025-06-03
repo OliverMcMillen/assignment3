@@ -290,11 +290,11 @@ $screenName = $_SESSION['screenName'] ?? '';
             <div class="overlay-content">
                 <span class="close-btn" id="closeHelp">[x]</span>
                 <h2>How the Chatroom Works</h2>
-                <p>This chatroom allows you to create and join chatrooms using a WebSocket connection. You must sign up
-                    with
-                    a username and screen name. Once logged in, you'll see a list of chatrooms, or you can create one.
-                    Messages are only seen by users in the same chatroom. This help box can be styled as needed. Add at
-                    least 250 words of explanation to meet the assignment requirement.</p>
+                <p style="color: black; font-size: 12px;">Welcome to the PHP WebSocket Chatroom by Oliver and Nawal! 
+                <br><br>This real-time chat application allows multiple users to create and join chatrooms dynamically using WebSocket technology for live communication without page reloads. To participate, users must first register by providing a username, password, and a screen name. Once logged in, users can view all currently available chatrooms in a dedicated scrollable section. Each chatroom may be locked (requiring a key to join) or unlocked (open to all users). Users may create new chatrooms by specifying a unique name and, optionally, a key to restrict access.
+                <br><br>When a new room is created, it is immediately broadcast to all connected users using a WebSocket connection. This ensures that everyone sees new rooms in real time without needing to refresh the page. When joining a chatroom, users are automatically assigned to that room’s message group, meaning they will only send and receive messages with others in the same room. Messages appear instantly for all users in the room, styled with alternating background colors to improve readability
+                This system includes a clean and functional user interface with overlays for login, signup, help, chatroom creation, and room key validation. Sessions are managed to ensure only authenticated users access the chat functionalities. The project demonstrates a full-stack implementation of real-time messaging using PHP, WebSockets, HTML, CSS, and JavaScript. It also handles edge cases like duplicate room names, invalid keys, and proper session handling.
+                <br><br>Use this chatroom to explore how WebSocket communication can enhance web applications through real-time interactivity.</p>
             </div>
         </div>
 
