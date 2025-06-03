@@ -58,7 +58,6 @@ do {
 						case 'chat_message':
 							// 1) Figure out which index (0, 1, 2, …) this $clientSocket occupies
 							$senderId = array_search($clientSocket, $listOfConnectedClients, true);
-							var_export($senderId);
 
 							$clientId = array_search($clientSocket, $listOfConnectedClients, true);
 							$clientRooms[$clientId] = $data['room'];

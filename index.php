@@ -389,12 +389,10 @@ $screenName = $_SESSION['screenName'] ?? '';
 
                     currentRoom = roomName;
 
-                    if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
-                        socket.send(JSON.stringify({
-                            type: "join_room",
-                            roomName: currentRoom,
-                        }));
-                    }
+                    document.getElementById("joinKeyOverlay").style.display = "none";
+                    document.getElementById("currentRoomName").textContent = roomName;
+                    document.getElementById("messageArea").innerHTML = "";
+                    
                 } else {
                     document.getElementById("joinRoomMsg").textContent = data.error || "Join failed.";
                 }
@@ -517,19 +515,11 @@ $screenName = $_SESSION['screenName'] ?? '';
             socket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
 
-                console.log("Message received:", data, "Current room:", currentRoom);
-
                 if (data.type === "new_room") {
                     addRoomToList({
                         name: data.chatroomName,
                         locked: !!data.locked
                     });
-                }
-
-                if (data.type === "join_room") {
-                    document.getElementById("joinKeyOverlay").style.display = "none";
-                    document.getElementById("currentRoomName").textContent = roomName;
-                    document.getElementById("messageArea").innerHTML = "";
                 }
 
                 if (data.type === "chat_message") {
