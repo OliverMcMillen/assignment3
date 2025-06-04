@@ -508,7 +508,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             loadAvailableRooms();
 
             // WebSocket for broadcasting new rooms
-            const socket = new WebSocket("ws://localhost:8081");
+            const socket = new WebSocket("ws://18.221.3.145/:8081");
             const myScreenName = "<?= $screenName ?>";
 
             // Broadcast to WebSocket
