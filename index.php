@@ -310,7 +310,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             });
 
             document.getElementById("logoutBtn")?.addEventListener("click", () => {
-                fetch("/services/logout.php")
+                fetch("services/logout.php")
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) location.reload();
@@ -336,7 +336,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             document.getElementById("loginForm").addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const form = e.target;
-                const res = await fetch("/services/login.php", {
+                const res = await fetch("services/login.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -356,7 +356,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             document.getElementById("signupForm").addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const form = e.target;
-                const res = await fetch("/services/signup.php", {
+                const res = await fetch("services/signup.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -378,7 +378,7 @@ $screenName = $_SESSION['screenName'] ?? '';
                 e.preventDefault();
                 const roomName = document.getElementById("hiddenRoomName").value;
                 const roomKey = document.getElementById("roomKeyInput").value.trim();
-                const res = await fetch("/services/joinRoom.php", {
+                const res = await fetch("services/joinRoom.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chatroomName: roomName, chatroomKey: roomKey })
@@ -403,7 +403,7 @@ $screenName = $_SESSION['screenName'] ?? '';
             document.getElementById("createRoomForm").addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const form = e.target;
-                const res = await fetch("/services/createRoom.php", {
+                const res = await fetch("services/createRoom.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -448,7 +448,7 @@ $screenName = $_SESSION['screenName'] ?? '';
 
 
             async function loadAvailableRooms() {
-                const res = await fetch("/services/getRooms.php");
+                const res = await fetch("services/getRooms.php");
                 const data = await res.json();
 
                 if (!data.success) return;
