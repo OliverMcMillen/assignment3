@@ -19,7 +19,7 @@ $stmt = $pdo->prepare("SELECT 1 FROM users WHERE username = ? OR screen_name = ?
 // Execute the query with the provided username and screen name as parameters (to prevent SQL injection)
 $stmt->execute([$username, $screenName]);
 
-/ If a record is found, it means the username or screen name is already in use
+// If a record is found, it means the username or screen name is already in use
 if ($stmt->fetch()) {
     http_response_code(409);
     echo json_encode(["error" => "Username or screen name taken"]);
