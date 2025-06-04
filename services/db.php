@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$dbname = 'chat_db';
+$dbname = 'cosc436db';
 $user = 'root';
 $pass = '';
 

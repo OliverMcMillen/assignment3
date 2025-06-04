@@ -424,7 +424,7 @@ $screenName = $_SESSION['screenName'] ?? '';
                             locked: !!form.chatroomKey.value
                         }));
                     }
-                    // form.reset();
+                    form.reset();
                 } else {
                     document.getElementById("createRoomMsg").textContent = data.error || "Failed to create chatroom.";
                 }
